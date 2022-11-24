@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Go-Student-API/controllers"
 	"Go-Student-API/initializers"
+	"Go-Student-API/routes"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,11 +15,10 @@ func init(){
 
 func main(){
 	r := gin.Default()
-	r.POST("/students", controllers.StudentsCreate)
-	r.GET("/students", controllers.StudentsIndex)
-	r.GET("/students/:id", controllers.StudentsShow)
-	r.PUT("/students/:id", controllers.StudentsUpdate)
-	r.DELETE("/students/:id",controllers.StudentsDelete)
+	r.GET("/", func(c *gin.Context){
+		c.String(200, "Welcome to students api.")
+	})
+	routes.StudentsRoute(r)
 	r.Run() 
 }
 
