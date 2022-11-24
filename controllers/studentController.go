@@ -9,16 +9,28 @@ import (
 )
 
 func StudentsCreate(c *gin.Context){
+	var body struct{
+		FirstName string
+		MiddleName string
+		LastName string
+		StudentID string
+		Age uint8
+		DOB time.Time
+		Gender string
+		IsCurrentStudent bool
+	}
+
+	c.Bind(&body)
 
 	student := models.Student{
-		FirstName: "Steven",
-		MiddleName: "",
-		LastName: "He",
-		DOB: time.Date(1998, time.Month(8), 4, 0, 0, 0, 0, time.UTC),
-		StudentID: "30113342",
-		Age: 24,
-		IsCurrentStudent: true,
-		Gender: "male",
+		FirstName: body.FirstName,
+		MiddleName: body.MiddleName,
+		LastName: body.LastName,
+		DOB: body.DOB,
+		StudentID: body.StudentID,
+		Age: body.Age,
+		IsCurrentStudent: body.IsCurrentStudent,
+		Gender: body.Gender,
 	}
 
 	result := initializers.DB.Create(&student) 
@@ -30,5 +42,72 @@ func StudentsCreate(c *gin.Context){
 
 	c.JSON(200, gin.H{
 		"student": student,
+	})
+}
+
+func StudentsIndex(c *gin.Context){
+	var students []models.Student
+	initializers.DB.Find(&students)
+
+	c.JSON(200, gin.H{
+		"students":students,
+	})
+}
+
+func StudentsShow(c *gin.Context){
+	id := c.Param("id")
+
+	var student models.Student
+	initializers.DB.First(&student, id)
+
+	c.JSON(200, gin.H{
+		"student":student,
+	})
+}
+
+func StudentsUpdate(c *gin.Context){
+	id := c.Param("id")
+	var body struct{
+		FirstName string
+		MiddleName string
+		LastName string
+		StudentID string
+		Age uint8
+		DOB time.Time
+		Gender string
+		IsCurrentStudent bool
+	}
+
+	c.Bind(&body)
+
+	var student models.Student
+	initializers.DB.First(&student, id)
+
+	initializers.DB.Model(&student).Updates(models.Student{
+		FirstName: body.FirstName,
+		MiddleName: body.MiddleName,
+		LastName: body.LastName,
+		DOB: body.DOB,
+		StudentID: body.StudentID,
+		Age: body.Age,
+		IsCurrentStudent: body.IsCurrentStudent,
+		Gender: body.Gender,
+	})
+
+	c.JSON(200, gin.H{
+		"student":student,
+	})
+}
+
+func StudentsDelete(c *gin.Context){
+	id := c.Param("id")
+
+	var student models.Student
+	initializers.DB.First(&student, id)
+
+	initializers.DB.Delete(&models.Student{}, id)
+
+	c.JSON(200, gin.H{
+		"student":student,
 	})
 }
